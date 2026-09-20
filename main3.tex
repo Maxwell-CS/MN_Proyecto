@@ -1,0 +1,208 @@
+\documentclass[final,5p,times,twocolumn,authoryear,11pt]{elsarticle}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[spanish]{babel}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{graphicx}
+\usepackage{xurl}
+\usepackage{booktabs}
+
+\makeatletter
+\let\oldbibitem\bibitem
+\renewcommand{\bibitem}[2][]{%
+  \def\@templabel{#1}%
+  \ifx\@templabel\@empty
+    \oldbibitem{#2}%
+  \else
+    \oldbibitem[#1]{#2}%
+  \fi
+  \setlength{\parindent}{0pt}\hangindent=1.27cm\hangafter=1}
+\makeatother
+
+\begin{document}
+
+% ---------- CARÁTULA ----------
+\begin{titlepage}
+    \centering
+
+    \includegraphics[width=0.32\textwidth]{logoutec.png}
+
+    \vspace{0.6cm}
+
+    {\LARGE \textbf{Control Adaptativo PID en Sistemas Caldera-Turbina mediante MARL (ICMA-TD3)} \par}
+    \vspace{0.9cm}
+    {\Huge \textbf{Avance 2} \par}
+    \vspace{0.2cm}
+    {\Large Grupo 3 -- Sección 9 \par}
+
+    \vspace{1.4cm}
+    {\large \textbf{Curso:} Métodos Numéricos \par}
+    \vspace{0.1cm}
+    {\large \textbf{Docente:} Jimmy Mendoza \par}
+
+    \vspace{1.2cm}
+
+    \begin{table}[h!]
+        \centering
+        \renewcommand{\arraystretch}{1.25}
+        \begin{tabular}{|l|c|}
+            \hline
+            \textbf{Integrante} & \textbf{Participación} \\
+            \hline
+            Sebastian Manuel Avila Torres & \textbf{100\%}\\
+            \hline
+            Maxwell Lupo Gregorio Collazos Solis & \textbf{100\%}\\
+            \hline
+            Matias Castillo Quincho & \textbf{100\%}\\
+            \hline
+            Pablo Nicolás Dávila Wong & \textbf{100\%}\\
+            \hline
+             Melvin Billy León Capcha & \textbf{100\%}\\
+            \hline
+        \end{tabular}
+        \caption{Cuadro de participación del grupo}
+    \end{table}
+
+    \vspace{0.7cm}
+    {\large \today \par}
+
+\end{titlepage}
+
+% ---------- CONTENIDO ----------
+\begin{frontmatter}
+
+\title{Control Adaptativo PID en Sistemas Caldera-Turbina mediante MARL (ICMA-TD3)}
+
+\author[first]{Sebastian Manuel Avila Torres}
+\author[first]{Maxwell Lupo Gregorio Collazos Solis}
+\author[first]{Matias Castillo Quincho}
+\author[first]{Pablo Nicolás Dávila Wong}
+\author[first]{Melvin Billy León Capcha}
+\affiliation[first]{organization={Universidad de Ingeniería y Tecnología (UTEC)},
+            city={Lima},
+            country={Perú}}
+
+\begin{abstract}
+
+\end{abstract}
+
+
+\end{frontmatter}
+
+\section{Introducción}
+\label{introduccion}
+
+El estudio aborda un problema crítico de control industrial en sistemas caldera-turbina (Boiler-Turbine System, BTS). Estos sistemas resultan fundamentales en las centrales termoeléctricas, ya que transforman la energía química del combustible en energía térmica (vapor), luego en energía mecánica mediante la turbina y, finalmente, en energía eléctrica a través de un generador. Para optimizar su funcionamiento, Kruthika y Paneerselvam~\citep{kruthika2025novel} incorporan Aprendizaje por Refuerzo Multiagente (Multi-Agent Reinforcement Learning, MARL) con la finalidad de ajustar automáticamente los parámetros del controlador PID: el agente de aprendizaje observa continuamente el estado del sistema, evalúa el rendimiento mediante una función de recompensa (reward function) y determina de forma dinámica las ganancias óptimas del PID para mejorar la respuesta temporal y la estabilidad del proceso. La propuesta destaca por integrar la solidez del control PID clásico con la flexibilidad y capacidad adaptativa del aprendizaje por refuerzo. En primer lugar, aporta adaptabilidad, pues permite ajustar de forma dinámica los parámetros del controlador ante variaciones operativas, no linealidades severas y perturbaciones externas. En segundo lugar, ofrece un rendimiento superior, ya que los resultados experimentales demuestran que el algoritmo ICMA-TD3 (Individual-Critic Multi-Agent Twin Delayed DDPG) logra una respuesta más precisa, estable y robusta en comparación con otros métodos evaluados, incluyendo esquemas tradicionales y la variante Shared-Critic SCMA-TD3. Finalmente, presenta aplicabilidad industrial, al proporcionar un marco viable para modernizar el control en plantas termoeléctricas de alta complejidad.
+
+El desarrollo del control en sistemas caldera-turbina ha evolucionado a lo largo de las últimas décadas desde modelos físicos fundamentales hasta esquemas avanzados de aprendizaje adaptativo. En este sentido, Åström y Bell (2000) desarrollaron un modelo dinámico no lineal de tercer orden basado en principios físicos para calderas de tambor de circulación natural~\citep{astrom2000drum}, el cual describe la interacción acoplada entre el tambor, los bajantes y los tubos ascendentes mediante un conjunto reducido de parámetros físicos. Este modelo, validado con datos reales de plantas en Suecia y Australia, se consolidó como el modelo de referencia (benchmark) estándar en el área. Posteriormente, Wen Tan et al. (2005) utilizaron la métrica de brecha (gap metric) para cuantificar el nivel de no linealidad del BTS~\citep{tan2005analysis}, demostrando que, a pesar de la severa no linealidad global, el sistema puede ser controlado eficazmente con un único controlador lineal en regiones de operación bien seleccionadas. Asimismo, identificaron las restricciones físicas de los actuadores como una fuente secundaria de no linealidad y aplicaron técnicas anti-windup para su mitigación. A continuación, Garrido, Morilla y Vázquez (2009) propusieron un esquema de control PID centralizado mediante el desacoplamiento de una unidad caldera-turbina~\citep{garrido2009centralized}, logrando reducir la interacción entre las variables de control y mejorando así la respuesta del sistema multivariable. Poco después, Jalali y Golmohammad (2012) propusieron una estrategia de múltiples modelos lineales locales, empleando la distancia de Vinnicombe para determinar la cantidad mínima y ubicación óptima de los puntos de linealización, evitando así las limitaciones de un único modelo linealizado global~\citep{jalali2012multiple}. Más adelante, Liu y Cui (2018) formularon un Control Predictivo basado en Modelo Económico (Economic MPC) operando sobre una familia de modelos lineales identificados por mínimos cuadrados en distintos niveles de carga~\citep{liu2018economic}, resolviendo la optimización en línea eficientemente mediante funciones de Laguerre, lo que redujo de manera significativa el tiempo de cómputo en comparación con la optimización no lineal directa. En la misma línea, Ghabraei, Moradi y Vossoughi (2020) propusieron una regulación robusta multivariable de una caldera-turbina industrial considerando incertidumbres en el modelo~\citep{ghabraei2020multivariable}, demostrando que el control robusto permite mantener el desempeño a pesar de la variación paramétrica y las perturbaciones externas. Finalmente, Kruthika y Paneerselvam (2025) revisaron dos décadas de literatura sobre controladores aplicados al modelo de Åström-Bell y propusieron dos esquemas basados en el algoritmo TD3 (Twin Delayed Deep Deterministic Policy Gradient)~\citep{kruthika2025novel}: el SCMA-TD3 (Shared-Critic Multi-Agent TD3) y el ICMA-TD3 (Individual-Critic Multi-Agent TD3). Estas técnicas permiten el sintonizado adaptativo en tiempo real del controlador PID, dejando en evidencia que la práctica dominante de la industria y la literatura consiste en linealizar el modelo en puntos de operación estratégicos antes de diseñar y evaluar la estrategia de control.
+
+Esta revisión evidencia, sin embargo, una limitación común que justifica el presente estudio. La operación flexible de las centrales termoeléctricas, exigida por la creciente penetración de generación renovable intermitente, obliga al sistema caldera-turbina a recorrer amplios rangos de carga y a apartarse del punto nominal para el cual fue sintonizado. El modelo de tercer orden de Åström y Bell~\citep{astrom2000drum} evidencia la dificultad de fondo: tres entradas manipuladas actúan simultáneamente sobre tres salidas fuertemente acopladas a través de términos no lineales. Las estrategias propuestas en las últimas dos décadas comparten, sin embargo, una misma limitación estructural, pues todas fijan sus parámetros fuera de línea sobre una aproximación lineal. Tan et al.~\citep{tan2005analysis} demostraron mediante la métrica de brecha que un controlador lineal único solo resulta válido dentro de una región de operación acotada; Jalali y Golmohammad~\citep{jalali2012multiple} sustituyeron ese modelo por una familia de modelos locales, trasladando el problema hacia la conmutación entre ellos; Garrido et al.~\citep{garrido2009centralized} construyeron una red de desacoplamiento centralizada sobre una matriz de transferencia linealizada; Ghabraei et al.~\citep{ghabraei2020multivariable} absorbieron la discrepancia entre modelo y planta como incertidumbre acotada, a costa de un conservadurismo que degrada el desempeño nominal; y Liu y Cui~\citep{liu2018economic} debieron recurrir a funciones de Laguerre para contener el costo computacional de la optimización en línea. Ninguna de estas formulaciones ajusta sus ganancias en función del desempeño efectivamente observado durante la operación.
+
+El trabajo de Kruthika y Paneerselvam~\citep{kruthika2025novel} se inscribe en ese vacío al delegar el sintonizado del PID a agentes entrenados por refuerzo, conservando la estructura de control que la industria ya opera y audita. Sus resultados, no obstante, no han sido sometidos a verificación independiente, y la ventaja reportada de la arquitectura de crítico individual (ICMA-TD3) sobre la de crítico compartido (SCMA-TD3) carece de una justificación teórica evidente en un problema de tres agentes con recompensa fuertemente acoplada. Reproducir y evaluar críticamente la propuesta constituye, por tanto, una contribución pertinente y no meramente replicativa. Desde la perspectiva de los métodos numéricos, el estudio resulta doblemente justificado. Cada nivel de carga define un punto de equilibrio que es raíz de un sistema de ecuaciones algebraicas no lineales y debe obtenerse mediante iteraciones de Newton, con evaluación de la matriz jacobiana en cada paso, dependencia explícita del punto semilla y un criterio de parada basado en el error relativo; dado el acoplamiento del modelo, la selección de semillas admite una estrategia de continuación en la que el equilibrio de un nivel de carga inicializa el cálculo del siguiente. A ello se suma la integración numérica del sistema de ecuaciones diferenciales que constituye el entorno del agente: puesto que este no observa la planta sino su aproximación discreta, el orden del integrador y el tamaño de paso condicionan la señal de recompensa y, con ella, la política aprendida. El estudio se justifica así como un banco de pruebas para contrastar el desempeño del controlador frente a la tolerancia, el esquema iterativo y la discretización empleados, aspecto que la literatura revisada reporta de manera incompleta.
+
+En este contexto, el presente trabajo tiene como objetivo general implementar y validar numéricamente el modelo no lineal de tercer orden del sistema caldera-turbina de Åström y Bell~\citep{astrom2000drum}, cuantificando cómo el esquema iterativo, la estrategia de interpolación y el tamaño de paso de integración condicionan la respuesta simulada de la planta operada con las ganancias PID reportadas por Kruthika y Paneerselvam~\citep{kruthika2025novel}. De manera específica, se busca: (i) determinar los puntos de equilibrio asociados a cada nivel de carga mediante el método de Newton para sistemas de ecuaciones no lineales, contrastando la solución iterativa frente a la solución explícita que admite la estructura triangular del modelo, con el fin de cuantificar el error real frente al error estimado y verificar experimentalmente el orden de convergencia del método; (ii) determinar la densidad de equilibrio del tambor correspondiente a un nivel de agua deseado mediante el método de Newton aplicado a la ecuación algebraica no lineal de la salida $y_3$, analizando la sensibilidad de la convergencia al punto semilla y la proximidad a la singularidad del denominador; (iii) construir funciones continuas que relacionen el nivel de carga con los puntos de equilibrio tabulados mediante diferencias divididas de Newton, comparando el polinomio de interpolación global frente a una interpolación por tramos y validando ambas construcciones mediante exclusión sucesiva de nodos; y (iv) simular la respuesta transitoria del sistema mediante un esquema explícito de Runge-Kutta de cuarto orden, contrastándolo con el método de Euler explícito para determinar el tamaño de paso admisible, verificar experimentalmente los órdenes de convergencia y cuantificar el efecto de la discretización sobre las métricas de desempeño ITAE, IAE e ISE.
+
+\section{Metodología}
+\label{metodologia}
+
+\subsection{Modelo del sistema}
+
+El modelo del sistema caldera-turbina empleado en este trabajo corresponde al desarrollado por Åström y Bell~\citep{astrom2000drum} y utilizado por Kruthika y Paneerselvam~\citep{kruthika2025novel} como planta de simulación para el ajuste del controlador PID. Se trata de un modelo no lineal de tercer orden, de parámetros concentrados, que describe la dinámica de una caldera de tambor de circulación natural mediante tres estados: la presión del tambor $x_1$ (kg/cm$^2$), la potencia eléctrica $x_2$ (MW) y la densidad del fluido en el tambor $x_3$ (kg/m$^3$). El sistema es controlado mediante tres entradas normalizadas en $[0,1]$: la posición de la válvula de combustible $u_1$, la posición de la válvula de vapor a la turbina $u_2$ y la posición de la válvula de agua de alimentación $u_3$. Las ecuaciones que gobiernan la dinámica del sistema son
+
+\begin{align}
+\dot{x}_1 &= -0.0018\,u_2\,x_1^{9/8} - 0.9\,u_1 - 0.15\,u_3, \label{eq:x1} \\[2pt]
+\dot{x}_2 &= \dfrac{(0.73\,u_2 - 0.16)\,x_1^{9/8} - x_2}{10}, \label{eq:x2} \\[2pt]
+\dot{x}_3 &= \dfrac{141\,u_3 - (1.1\,u_2 - 0.19)\,x_1}{85}, \label{eq:x3}
+\end{align}
+con salidas
+\begin{align}
+y_1 &= x_1, \qquad y_2 = x_2, \label{eq:y1y2} \\[2pt]
+y_3 &= 0.05\left(0.13073\,x_3 + 100\,a_{cs} + \frac{q_{ev}}{9} - 67.975\right), \label{eq:y3}
+\end{align}
+donde $y_3$ es la desviación del nivel de agua del tambor (m), $a_{cs}$ es el coeficiente de calidad de vapor en el tubo ascendente definido en el modelo original~\citep{astrom2000drum} y $q_{ev}$ es la tasa de evaporación, dada por
+\begin{equation}
+q_{ev} = \frac{(1-0.001538\,x_3)(0.8\,x_1 - 25.6)}{x_3(1.0394 - 0.0012304\,x_1)}. \label{eq:qev}
+\end{equation}
+Adicionalmente, la calidad del vapor $s_q$ se expresa como
+\begin{equation}
+s_q = (0.854\,u_2 - 0.147)\,x_1 + 45.51\,u_1 - 2.154\,u_3 - 2.096. \label{eq:sq}
+\end{equation}
+
+Cada nivel de carga de la planta define un punto de equilibrio $(x_1^0,x_2^0,x_3^0,u_1^0,u_2^0,u_3^0)$, raíz del sistema algebraico que resulta de igualar a cero las Ecs.~\eqref{eq:x1}--\eqref{eq:x3}. Kruthika y Paneerselvam~\citep{kruthika2025novel} reportan siete de estos puntos, listados en el Cuadro~\ref{tab:operating_points}, que cubren el rango operativo típico de la planta desde baja hasta alta carga y que constituyen los puntos semilla y de referencia para el análisis numérico propuesto en este trabajo.
+
+\begin{table*}[t]
+\centering
+\footnotesize
+\caption{Puntos de operación del modelo de Åström y Bell reportados en~\citep{kruthika2025novel}.}
+\label{tab:operating_points}
+\begin{tabular}{ccccccc}
+\toprule
+Punto & $u_1^0$ & $u_2^0$ & $u_3^0$ & $x_1^0$ (kg/cm$^2$) & $x_2^0$ (MW) & $x_3^0$ (kg/m$^3$) \\
+\midrule
+1 & 0.1560 & 0.4830 & 0.1830 & 75.60  & 15.270  & 299.60 \\
+2 & 0.2090 & 0.5520 & 0.2560 & 86.40  & 36.650  & 342.40 \\
+3 & 0.2710 & 0.6210 & 0.3400 & 97.20  & 50.520  & 385.20 \\
+4 & 0.3400 & 0.6900 & 0.4330 & 108.00 & 66.650  & 428.00 \\
+5 & 0.4180 & 0.7590 & 0.5430 & 118.80 & 85.060  & 470.80 \\
+6 & 0.5050 & 0.8280 & 0.6630 & 129.60 & 105.800 & 513.60 \\
+7 & 0.6000 & 0.8970 & 0.7930 & 140.40 & 128.900 & 556.40 \\
+\bottomrule
+\end{tabular}
+\end{table*}
+
+\subsection{Supuestos y simplificaciones del modelo}
+
+El modelo de Åström y Bell~\citep{astrom2000drum} adopta una representación de parámetros concentrados que no resuelve la distribución espacial de temperatura y presión dentro del tambor, los bajantes y los tubos ascendentes, sino que agrega su comportamiento mediante un número reducido de coeficientes empíricos. En este trabajo se asume, además, que las válvulas de control $u_1$, $u_2$ y $u_3$ responden de forma instantánea a la señal del controlador, sin dinámica propia de actuador ni retardo adicional a la ya incorporada en las Ecs.~\eqref{eq:x1}--\eqref{eq:x3}; y que el fluido dentro del tambor se encuentra en equilibrio termodinámico local, de modo que las relaciones algebraicas para $q_{ev}$ y $s_q$ (Ecs.~\eqref{eq:qev}--\eqref{eq:sq}) son válidas en todo instante de la simulación. Se asume también que, para cada nivel de carga, existe un punto de equilibrio aislado y localmente único en un entorno del punto semilla, condición necesaria para la convergencia del método de Newton, y que el Jacobiano del sistema no es singular en dicho entorno. De manera análoga, se asume que el punto semilla empleado para resolver la densidad de equilibrio del tambor a partir de un nivel de agua deseado se mantiene suficientemente alejado de la singularidad del denominador de la Ec.~\eqref{eq:qev}, condición necesaria para la convergencia del método de Newton en ese problema escalar. Finalmente, en esta etapa del trabajo las ganancias del controlador PID se toman como parámetros fijos, reportados en la literatura de referencia para cada punto de operación; su ajuste dinámico mediante el agente ICMA-TD3 constituye el problema de control que el modelo numérico aquí formulado permitirá analizar en etapas posteriores, quedando fuera del alcance de la presente entrega su implementación y evaluación.
+
+\subsection{Métodos numéricos propuestos}
+
+Para abordar los objetivos específicos planteados se emplean tres técnicas numéricas de base --el método de Newton, la interpolación polinomial y la integración de ecuaciones diferenciales ordinarias-- articuladas en cuatro frentes complementarios, cada uno correspondiente a uno de los objetivos específicos del trabajo. De estas técnicas, el método de Newton, la interpolación polinomial y el método de Euler explícito fueron revisados en el curso, mientras que el método de Runge-Kutta de cuarto orden constituye la técnica adicional no revisada en clase.
+
+En primer lugar, se emplea el método de Newton para sistemas de ecuaciones no lineales para calcular los puntos de equilibrio del modelo (Ecs.~\eqref{eq:x1}--\eqref{eq:x3} igualadas a cero) en función del nivel de carga. Dado que el sistema está fuertemente acoplado, la selección del punto semilla condiciona la convergencia del método; por ello se adopta una estrategia de continuación en la que el equilibrio calculado para un nivel de carga inicializa la iteración del nivel siguiente, en la línea de lo empleado en la determinación de puntos de operación de sistemas no lineales fuertemente cargados~\citep{ajjarapu1992continuation}. Adicionalmente, dado que $\dot{x}_1$ depende únicamente de $x_1$ y de las entradas de control, mientras que $\dot{x}_2$ y $\dot{x}_3$ dependen de $x_1$ y de sí mismos, el sistema de equilibrio exhibe una estructura triangular que admite una solución explícita por sustitución sucesiva, sin necesidad de iteración. Esta solución explícita se emplea como referencia exacta para cuantificar el error real de la solución iterativa de Newton frente a su error estimado a partir del criterio de parada, y para verificar experimentalmente el orden de convergencia cuadrático del método en función de la distancia del punto semilla al equilibrio.
+
+En segundo lugar, se aplica el mismo método de Newton, ahora sobre una única ecuación algebraica no lineal, para resolver el problema inverso de determinar la densidad de equilibrio del tambor $x_3$ que corresponde a un nivel de agua deseado $y_3$, a partir de las Ecs.~\eqref{eq:y3}--\eqref{eq:qev}. Esta ecuación presenta una singularidad cuando el denominador $x_3(1.0394 - 0.0012304\,x_1)$ de la Ec.~\eqref{eq:qev} se aproxima a cero, por lo que se analiza la sensibilidad de la convergencia del método a la elección del punto semilla y a la proximidad de la iteración a dicha singularidad.
+
+En tercer lugar, se propone el uso de interpolación polinomial para construir una función continua que relacione el nivel de carga con los puntos de equilibrio tabulados (Cuadro~\ref{tab:operating_points}). Mediante diferencias divididas de Newton se construyen tanto un polinomio de interpolación global sobre los siete puntos como una interpolación segmentada por tramos entre puntos consecutivos, comparando ambas construcciones en cuanto a su comportamiento entre nodos. La validación de los dos esquemas se realiza mediante exclusión sucesiva de nodos: cada punto tabulado se excluye a su vez del conjunto de ajuste y se estima a partir de los puntos restantes, cuantificando el error de predicción resultante. Este enfoque permite evaluar el modelo y las ganancias del controlador en niveles de carga intermedios no reportados explícitamente en el artículo base, y es análogo al empleado en el diseño de controladores PI con ganancias programadas (gain-scheduled) entre puntos de operación de procesos no lineales~\citep{gao2005design}.
+
+En cuarto lugar, dado que las Ecs.~\eqref{eq:x1}--\eqref{eq:x3} constituyen un sistema de ecuaciones diferenciales ordinarias que representa el entorno dinámico sobre el que actúa el controlador, se propone su integración numérica mediante un esquema explícito de Runge-Kutta de cuarto orden, contrastado con el método de Euler explícito. A diferencia de los métodos de un solo paso de menor orden, el esquema de Runge-Kutta permite controlar el error local de truncamiento a través del orden del método y del tamaño de paso empleado. La comparación entre ambos esquemas permite determinar el tamaño de paso admisible para reproducir con fidelidad la respuesta transitoria de la planta y verificar experimentalmente los órdenes de convergencia teóricos de cada método mediante el refinamiento sucesivo del paso de integración. Adicionalmente, se cuantifica el efecto de la discretización temporal sobre las métricas de desempeño del lazo de control ITAE, IAE e ISE, evaluadas sobre la respuesta simulada de la planta operada con las ganancias PID de referencia reportadas por Kruthika y Paneerselvam~\citep{kruthika2025novel}. Esta elección se sustenta en evidencia reciente que muestra que la precisión de la integración numérica del entorno afecta de manera significativa el desempeño y la estabilidad de controladores ajustados mediante aprendizaje por refuerzo~\citep{bajrami2026modelling}.
+
+\clearpage
+
+\bibliographystyle{apalike}
+\begin{thebibliography}{9}
+
+\bibitem[Ajjarapu and Christy(1992)]{ajjarapu1992continuation}
+Ajjarapu, V., \& Christy, C. (1992). The continuation power flow: A tool for steady state voltage stability analysis. \emph{IEEE Transactions on Power Systems}, 7(1), 416--423. \url{https://doi.org/10.1109/59.141737}
+
+\bibitem[{\AA}str{\"o}m and Bell(2000)]{astrom2000drum}
+Åström, K. J., \& Bell, R. D. (2000). Drum-boiler dynamics. \emph{Automatica}, 36(3), 363--378. \url{https://doi.org/10.1016/S0005-1098(99)00171-5}
+
+\bibitem[Bajrami et al.(2026)]{bajrami2026modelling}
+Bajrami, E., Bajrami, E., \& Lameski, P. (2026). Modelling and quantifying numerical integration errors in deep reinforcement learning for propulsion dynamics. \emph{Aerospace Science and Technology}, 177, Artículo 112209. \url{https://doi.org/10.1016/j.ast.2026.112209}
+
+\bibitem[Gao and Budman(2005)]{gao2005design}
+Gao, J., \& Budman, H. M. (2005). Design of robust gain-scheduled PI controllers for nonlinear processes. \emph{Journal of Process Control}, 15(7), 807--817. \url{https://doi.org/10.1016/j.jprocont.2005.02.003}
+
+\bibitem[Garrido et al.(2009)]{garrido2009centralized}
+Garrido, J., Morilla, F., \& Vázquez, F. (2009). Centralized PID control by decoupling of a boiler-turbine unit. En \emph{Proceedings of the European Control Conference (ECC 2009)} (pp.~4007--4012). EUCA. \url{https://www.dia.uned.es/~fmorilla/Web_FMorilla_Julio_2013/Ultimas_publicaciones/2009_BoilerTurbine_ECC09.pdf}
+
+\bibitem[Ghabraei et al.(2020)]{ghabraei2020multivariable}
+Ghabraei, S., Moradi, H., \& Vossoughi, G. (2020). Multivariable robust regulation of an industrial boiler-turbine with model uncertainties. \emph{2020 9th International Conference on Modern Circuits and Systems Technologies (MOCAST)} (pp.~1--4). IEEE. \url{https://doi.org/10.1109/MOCAST49295.2020.9200289}
+
+\bibitem[Jalali and Golmohammad(2012)]{jalali2012multiple}
+Jalali, A. A., \& Golmohammad, H. (2012). An optimal multiple-model strategy to design a controller for nonlinear processes: A boiler-turbine unit. \emph{Computers \& Chemical Engineering}, 46, 48--58. \url{https://doi.org/10.1016/j.compchemeng.2012.06.005}
+
+\bibitem[Kruthika and Paneerselvam(2025)]{kruthika2025novel}
+Kruthika, U., \& Paneerselvam, S. (2025). Novel multiagent reinforcement learning framework using twin delayed deep deterministic policy gradient for adaptive PID control in boiler turbine systems. \emph{Scientific Reports}, 15(1), Artículo 34558. \url{https://doi.org/10.1038/s41598-025-17928-9}
+
+\bibitem[Liu and Cui(2018)]{liu2018economic}
+Liu, X., \& Cui, J. (2018). Economic model predictive control of boiler-turbine system. \emph{Journal of Process Control}, 66, 59--67. \url{https://doi.org/10.1016/j.jprocont.2018.03.004}
+
+\bibitem[Tan et al.(2005)]{tan2005analysis}
+Tan, W., Marquez, H. J., Chen, T., \& Liu, J. (2005). Analysis and control of a nonlinear boiler-turbine unit. \emph{Journal of Process Control}, 15(8), 883--891. \url{https://doi.org/10.1016/j.jprocont.2005.03.007}
+
+\end{thebibliography}
+
+\end{document}
